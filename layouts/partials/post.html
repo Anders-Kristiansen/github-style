@@ -1,4 +1,32 @@
 <div>
+  {{ $postAuthor := "" }}
+  {{ with .Site.Params.author }}
+    {{ if reflect.IsMap . }}
+      {{ with index . "name" }}
+        {{ $postAuthor = . }}
+      {{ else }}
+        {{ with index $.Site.Params.author "email" }}
+          {{ $postAuthor = . }}
+        {{ end }}
+      {{ end }}
+    {{ else }}
+      {{ $postAuthor = . }}
+    {{ end }}
+  {{ end }}
+  {{ if not $postAuthor }}
+    {{ with .Site.Author.name }}
+      {{ $postAuthor = . }}
+    {{ else }}
+      {{ with .Site.Author }}
+        {{ if not (reflect.IsMap .) }}
+          {{ $postAuthor = . }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ if not $postAuthor }}
+    {{ $postAuthor = .Site.Title }}
+  {{ end }}
   <main>
     <div class="gisthead pagehead bg-gray-light pb-0 pt-3 mb-4">
       <div class="px-0">
@@ -14,7 +42,7 @@
               <div class="d-flex flex-column">
                 <h1 class="break-word f3 text-normal mb-md-0 mb-1">
                   <span class="author">
-                    <a href="{{ .Site.BaseURL }}">{{ .Site.Params.author }}</a>
+                    <a href="{{ .Site.BaseURL }}">{{ $postAuthor }}</a>
                   </span>
                   <span class="path-divider">/</span>
                   <strong class="css-truncate css-truncate-target mr-1" style="max-width: 410px">

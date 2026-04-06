@@ -1,4 +1,32 @@
 {{ partial "menus.html" . }}
+{{ $profileAuthor := "" }}
+{{ with .Site.Params.author }}
+  {{ if reflect.IsMap . }}
+    {{ with index . "name" }}
+      {{ $profileAuthor = . }}
+    {{ else }}
+      {{ with index $.Site.Params.author "email" }}
+        {{ $profileAuthor = . }}
+      {{ end }}
+    {{ end }}
+  {{ else }}
+    {{ $profileAuthor = . }}
+  {{ end }}
+{{ end }}
+{{ if not $profileAuthor }}
+  {{ with .Site.Author.name }}
+    {{ $profileAuthor = . }}
+  {{ else }}
+    {{ with .Site.Author }}
+      {{ if not (reflect.IsMap .) }}
+        {{ $profileAuthor = . }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ if not $profileAuthor }}
+  {{ $profileAuthor = .Site.Title }}
+{{ end }}
 <div class="container-xl px-3 px-md-4 px-lg-5">
   <div class="gutter-condensed gutter-lg flex-column flex-md-row d-flex">
     <div class="flex-shrink-0 col-12 col-md-3 mb-4 mb-md-0">
@@ -13,7 +41,7 @@
               {{ end }}
             </span>
             <span class="d-table-cell v-align-middle lh-condensed">
-              <strong>{{ .Site.Params.author }}</strong>
+              <strong>{{ $profileAuthor }}</strong>
             </span>
           </div>
         </div>
@@ -51,7 +79,7 @@
             class="vcard-names-container float-left col-10 col-md-12 pt-1 pt-md-3 pb-1 pb-md-3 js-sticky js-user-profile-sticky-fields"
             data-original-top="0px" style="position: sticky;">
             <h1 class="vcard-names pl-2 pl-md-0">
-              <span class="p-name vcard-fullname d-block overflow-hidden">{{ .Site.Params.author }}</span>
+              <span class="p-name vcard-fullname d-block overflow-hidden">{{ $profileAuthor }}</span>
               {{ if .Site.Params.github }}
               <span class="p-nickname vcard-username d-block">{{ .Site.Params.github }}</span>
               {{ end }}
